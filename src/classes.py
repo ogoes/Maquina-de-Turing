@@ -57,6 +57,9 @@ class Machine:
 	def run(self):
 
 
+		last_state = -1
+		state_counter = 0
+
 		while True:
 			self.__mostraFitas__()
 
@@ -71,11 +74,26 @@ class Machine:
 			a = 0
 
 
-
 			for transit in transitions:
 				for i in range( self.__qtFitas ):
 					if transit['fitas'][i]['simbolo_atual'] == pos[i]:
 						a = 1
+
+						print(self.__estadoAtual, last_state)
+						
+
+						if self.__estadoAtual == last_state:
+							state_counter += 1
+
+							if state_counter == 1000:
+								print('Loop detectado')
+								exit(1)
+
+						else:
+							
+							state_counter = 0
+							last_state = self.__estadoAtual
+
 						self.__estadoAtual = transit['estado_destino']
 
 						novoSimbolo = transit['fitas'][i]['novo_simbolo']
@@ -94,7 +112,7 @@ class Machine:
 				exit(1)
 			
 
-			input()
+			#input()
 			# time.sleep(3)
 
 
