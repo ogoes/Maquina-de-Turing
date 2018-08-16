@@ -1,5 +1,6 @@
+#!/bin/python3
 import sys
-
+import classes
 
 def read_lines(filename):
     arq = open(filename)
@@ -39,5 +40,12 @@ def read_lines(filename):
     return result
 
 
+def main():
+    lines = read_lines(sys.argv[1])
+
+    machine = classes.Machine(lines, sys.argv[2].strip('"'))
+    machine.run()
+    
+
 if __name__ == '__main__':
-    lines = read_lines(sys.argv[0])
+    main()
