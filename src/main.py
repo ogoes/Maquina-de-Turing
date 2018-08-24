@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 import sys
-import classes
+import maquina
 
 def read_lines(filename):
     arq = open(filename)
@@ -14,7 +14,6 @@ def read_lines(filename):
     result['estados'] = lines[3].split(' ')
     result['estado_inicial'] = lines[4]
     result['estados_finais'] = lines[5].split(' ')
-    result['qt_fitas'] = int(lines[6])
     result['transicoes'] = []
 
     for t in lines[7:]:
@@ -23,16 +22,11 @@ def read_lines(filename):
         transition = {}
         transition['estado_atual'] = split_tmp[0]
         transition['estado_destino'] = split_tmp[1]
-        transition['fitas'] = []
-
-        for i in range(result['qt_fitas']):
-            transition['fitas'].append(
-                {
-                    'simbolo_atual': split_tmp[i * 3 + 2],
-                    'novo_simbolo': split_tmp[i * 3 + 3],
-                    'movimento': split_tmp[i * 3 + 4]
-                }
-            )
+        transition['fita'] = {
+                    'simbolo_atual': split_tmp[2],
+                    'novo_simbolo': split_tmp[3],
+                    'movimento': split_tmp[4]
+        }
 
         result['transicoes'].append(transition)
 
@@ -43,7 +37,7 @@ def read_lines(filename):
 def main():
     lines = read_lines(sys.argv[1])
 
-    machine = classes.Machine(lines, sys.argv[2].strip('"'))
+    machine = Maquina(lines, sys.argv[2].strip('"'))
     machine.run()
     
 
