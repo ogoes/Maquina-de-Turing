@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 import sys
-import maquina
+from maquina import *
 
 def read_lines(filename):
     arq = open(filename)
@@ -36,6 +36,8 @@ def read_lines(filename):
 
 def main():
     lines = read_lines(sys.argv[1])
+
+    # print(lines);
 
     machine = Maquina(lines, sys.argv[2].strip('"'))
     machine.run()
