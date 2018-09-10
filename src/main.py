@@ -22,11 +22,10 @@ def read_lines(filename):
         transition = {}
         transition['estado_atual'] = split_tmp[0]
         transition['estado_destino'] = split_tmp[1]
-        transition['fita'] = {
-                    'simbolo_atual': split_tmp[2],
-                    'novo_simbolo': split_tmp[3],
-                    'movimento': split_tmp[4]
-        }
+        transition['simbolo_atual'] = split_tmp[2]
+        transition['novo_simbolo'] = split_tmp[3]
+        transition['movimento'] = split_tmp[4]
+
 
         result['transicoes'].append(transition)
 
@@ -39,7 +38,10 @@ def main():
 
     # print(lines);
 
-    machine = Maquina(lines, sys.argv[2].strip('"'))
+    if len(sys.argv) == 2:
+        machine = Maquina(lines, "")
+    else:
+        machine = Maquina(lines, sys.argv[2].strip('"'))
     machine.run()
     
 

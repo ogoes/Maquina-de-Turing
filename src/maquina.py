@@ -1,124 +1,137 @@
 from estado import *
 from transicao import *
 from fita import *
+from execute import Algoz
+
 
 class Maquina:
-	""""""
-	def __init__(self, result, entrada):
+    """"""
 
-		self.alfabeto = result['alfabeto_entrada']
-		self.entrada = entrada
+    def __init__(self, result, entrada):
+        if len(entrada) == 0:
+            print("entrada vazia")
+            exit(0)
 
-		self.listaEstados = [ Estado(i) for i in result['estados'] ]
+        self.execucoes = []
+        self.qtde_execucoes = 0
+        self.alfabeto = result['alfabeto_entrada']
+        self.entrada = entrada
 
-
-		estado = Estado(result['estado_inicial'])
-		estado.setInicial()
-
-		self.estadoAtual = estado
-		self.listaEstados.append(estado)
-
-		for finais in result['estados_finais']:
-			for estado in self.listaEstados:
-				if estado.getNome() == finais:
-					estado.setFinal()
+        self.listaEstados = [Estado(i) for i in result['estados']]
+        self.fita = Fita(result['alfabeto_fita'],
+                         result['simbolo_espaco'], entrada)
 
 
-		self.transicoes = []
+
+        for i, estado in enumerate(self.listaEstados):
+            if estado.getNome() == result['estado_inicial']:
+                self.listaEstados[i].setInicial()
+                self.estadoAtual = self.listaEstados[i]
+                self.estado_inicial = self.estadoAtual
 
 
-		for transicoes in result['transicoes']:
-			for estado in self.listaEstados:
-				if transicoes['estado_atual'] == estado.getNome():
-					cur_state = estado
-				if transicoes['estado_destino'] == estado.getNome():
-					nex_state = estado
-
-			self.transicoes.append(Transicao(cur_state, nex_state, transicoes['fita']['simbolo_atual'], transicoes['fita']['novo_simbolo'], transicoes['fita']['movimento']))
-
-		self.alfabetoFita = result['alfabeto_fita']
-		self.__blank = result['simbolo_espaco']
-		self.fita = Fita(self.alfabetoFita, self.__blank, self.entrada)
+        self.execucoes.append(Algoz(self.qtde_execucoes,
+                                self.fita,
+                                self.estadoAtual))
+        self.qtde_execucoes += 1
 
 
-	def __isFinal__(self):
-		if self.estadoAtual.isFinal():
-			print("Entrada Aceita = \"%s\"" %(self.entrada))
-			exit(0)
+        for finais in result['estados_finais']:
+            for i, estado in enumerate(self.listaEstados):
+                if estado.getNome() == finais:
+                    self.listaEstados[i].setFinal()
 
-	def __getTransitions__(self):
-		transitions = []
+        self.transicoes = []
+        for transicoes in result['transicoes']:
+            for i, estado in enumerate(self.listaEstados):
+                if transicoes['estado_atual'] == estado.getNome():
+                    cur_state = self.listaEstados[i]
+                if transicoes['estado_destino'] == estado.getNome():
+                    nex_state = self.listaEstados[i]
 
-		for transition in self.transicoes:
-			if transition.getEstadoAtual() == self.estadoAtual:
-				transitions.append(transition)
-
-		if len(transitions) == 0:
-			print("Computação interrompida, sem transições")
-
-			return False
-
-		return transitions
+            self.transicoes.append(Transicao(
+                cur_state,
+                nex_state,
+                transicoes['simbolo_atual'],
+                transicoes['novo_simbolo'],
+                transicoes['movimento']))
 
 
-	def __mostraFita__(self):
-		self.fita.mostraFita()
-		print("\nEstado Atual: %s" %(self.estadoAtual.getNome()))
 
-	def run(self):
+    def get_transicoes(self, estado, simbolo):
+        transitions = [t for t in self.transicoes if estado.getNome() == t.getEstadoAtual().getNome()]
+        return [t for t in transitions if t.getSimboloAtual() == simbolo]
 
-		last_state = self.listaEstados[-1]
-		state_counter = 0
 
-		while True:
-			self.__mostraFita__()
 
-			self.__isFinal__()
+    def organiza(self, transicoes):
 
-			transitions = self.__getTransitions__()
+        trans_exec = []
+        self.qtde_execucoes = 0
+        execs_aux = []
+        for execs in self.execucoes:
 
-			if transitions == False:
-				return 1
+            aux_trans = []
 
-			pos = self.fita.getPos()
-			a = 0
+            for t in transicoes:
+                if t.getEstadoAtual().getNome() == execs.get_estado().getNome():
+                    aux_trans.append(t)
+                else:
+                    break
 
-			for transit in transitions:
-				if transit.getSimboloAtual() == pos:
-					a = 1
+            if len(aux_trans) > 0:
+                transicoes.remove(aux_trans[0])
+                execs_aux.append(execs)
+                self.qtde_execucoes += 1
+            for trans in aux_trans[1:]:
+                transicoes.remove(trans)
+                self.qtde_execucoes += 1
+                execs_aux += execs.get_copias(1, self.qtde_execucoes)
 
-					print(self.estadoAtual.getNome(), last_state.getNome())
-					
+            trans_exec += aux_trans
 
-					if self.estadoAtual.getNome() == last_state:
-						state_counter += 1
+        self.execucoes = execs_aux
+        return trans_exec
 
-						if state_counter == 1000:
-							print('Loop detectado')
-							return 1
 
-					else:
-						
-						state_counter = 0
-						last_state = self.estadoAtual
+    def run(self):
 
-					self.estadoAtual = transit.getNovoEstado()
+        a = 0
+        retorno_exec = []
+        transicoes = []
+        transicoes = self.get_transicoes(self.execucoes[0].get_estado(), self.execucoes[0].get_simbolo())
+        while True:
+            print("---------------------------------------------------------------------")
 
-					novoSimbolo = transit.getNovoSimbolo()
-					self.fita.setPos( novoSimbolo )
-					
-					print("Instrução a ser executada:", transit.getEstadoAtual().getNome(),"-->", transit.getNovoEstado().getNome(), ",", transit.getSimboloAtual(),"-->", transit.getNovoSimbolo(), ",", transit.getMovimento(), "\n")
+           
+            aux_trans = []
+            aux_execs = []
+            for i, trans in enumerate(transicoes):
+                retorno = self.execucoes[i].execute(transicoes[i])
+                trans = self.get_transicoes(retorno['estado'], retorno['simbolo'])
+                for t in trans:
+                    aux_execs += self.execucoes[i].get_copias(1, self.qtde_execucoes)
+                    self.qtde_execucoes += 1
 
-					movimento = transit.getMovimento()
-					if movimento == 'R':
-						self.fita.setRight()
-					elif movimento == 'L':
-						self.fita.setLeft()
+                aux_trans += trans
 
-			if a == 0:
-				print("Computação interrompida, entrada recusada = \"%s\"" %(self.entrada))
-				return 0
-			
+            for finais in self.execucoes:
+                finais.is_final(self.entrada)
 
-			input()
-			# time.sleep(3)
+            transicoes = aux_trans
+            self.execucoes = aux_execs
+            self.qtde_execucoes = 0
+
+
+            if len(transicoes) == 0:
+                print("entrada recusada:", self.entrada)
+                exit(0)
+
+            
+                
+
+
+            print("---------------------------------------------------------------------")
+            input() 
+
+

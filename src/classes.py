@@ -1,10 +1,4 @@
 import time
 
-
-
-
-
-
-
 if __name__ == "__main__":
-	print("Arquivo principal: \"main.py\"")
+    print("Arquivo principal: \"main.py\"")
