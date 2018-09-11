@@ -21,18 +21,17 @@ class Maquina:
         self.fita = Fita(result['alfabeto_fita'],
                          result['simbolo_espaco'], entrada)
 
-
+        self.finais = result["estados_finais"]
 
         for i, estado in enumerate(self.listaEstados):
             if estado.getNome() == result['estado_inicial']:
                 self.listaEstados[i].setInicial()
                 self.estadoAtual = self.listaEstados[i]
-                self.estado_inicial = self.estadoAtual
 
 
-        self.execucoes.append(Algoz(self.qtde_execucoes,
+        self.execucoes.append({'exec': Algoz(self.qtde_execucoes,
                                 self.fita,
-                                self.estadoAtual))
+                                self.estadoAtual)})
         self.qtde_execucoes += 1
 
 
@@ -59,79 +58,55 @@ class Maquina:
 
 
     def get_transicoes(self, estado, simbolo):
-        transitions = [t for t in self.transicoes if estado.getNome() == t.getEstadoAtual().getNome()]
-        return [t for t in transitions if t.getSimboloAtual() == simbolo]
-
-
-
-    def organiza(self, transicoes):
-
-        trans_exec = []
-        self.qtde_execucoes = 0
-        execs_aux = []
-        for execs in self.execucoes:
-
-            aux_trans = []
-
-            for t in transicoes:
-                if t.getEstadoAtual().getNome() == execs.get_estado().getNome():
-                    aux_trans.append(t)
-                else:
-                    break
-
-            if len(aux_trans) > 0:
-                transicoes.remove(aux_trans[0])
-                execs_aux.append(execs)
-                self.qtde_execucoes += 1
-            for trans in aux_trans[1:]:
-                transicoes.remove(trans)
-                self.qtde_execucoes += 1
-                execs_aux += execs.get_copias(1, self.qtde_execucoes)
-
-            trans_exec += aux_trans
-
-        self.execucoes = execs_aux
-        return trans_exec
-
+        transitions = [t for t in self.transicoes 
+                        if estado.getNome() == t.getEstadoAtual().getNome() and t.getSimboloAtual() == simbolo]
+        return transitions
 
     def run(self):
 
-        a = 0
         retorno_exec = []
-        transicoes = []
-        transicoes = self.get_transicoes(self.execucoes[0].get_estado(), self.execucoes[0].get_simbolo())
+
+        transicoes = self.get_transicoes(self.execucoes[0]['exec'].get_estado(), self.execucoes[0]['exec'].get_simbolo())
+        self.execucoes[0]['transicoes'] = transicoes
+
         while True:
             print("---------------------------------------------------------------------")
 
-           
-            aux_trans = []
+            i = 0
+
             aux_execs = []
-            for i, trans in enumerate(transicoes):
-                retorno = self.execucoes[i].execute(transicoes[i])
-                trans = self.get_transicoes(retorno['estado'], retorno['simbolo'])
-                for t in trans:
-                    aux_execs += self.execucoes[i].get_copias(1, self.qtde_execucoes)
-                    self.qtde_execucoes += 1
-
-                aux_trans += trans
-
-            for finais in self.execucoes:
-                finais.is_final(self.entrada)
-
-            transicoes = aux_trans
-            self.execucoes = aux_execs
-            self.qtde_execucoes = 0
-
-
-            if len(transicoes) == 0:
-                print("entrada recusada:", self.entrada)
-                exit(0)
-
-            
+            for ex in self.execucoes:
                 
 
+                if len(ex['transicoes']) == 1:
+                    ex['transicoes'] = ex['transicoes'][0]
+                    aux_execs.append(ex)
+                elif len(ex['transicoes']) > 1:
+                    aux_trans = ex['transicoes']
+                    ex['transicoes'] = aux_trans[0]
+                    aux_execs.append(ex)
+
+                    for trans in aux_trans[1:]:
+                        self.qtde_execucoes += 1
+                        aux = Algoz(self.qtde_execucoes, ex['exec'].get_fita(), ex['exec'].get_estado())
+                        aux_execs.append({'exec': aux,
+                                            'transicoes': trans})
+
+            self.execucoes = aux_execs
+
+            trans = []
+            for execs in self.execucoes:
+                execs['exec'].execute(execs['transicoes'])
+                execs['transicoes'] = self.get_transicoes(execs['exec'].get_estado(), execs['exec'].get_simbolo())
+                trans += execs['transicoes']
+                if execs['exec'].is_final(self.entrada) == 0:
+                    return 0
+
+            if len(self.execucoes) == 0:
+                print("Entrada Recusada: \"%s\"" %(self.entrada))
+                return 1
 
             print("---------------------------------------------------------------------")
-            input() 
+            input()
 
 

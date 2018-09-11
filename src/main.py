@@ -42,7 +42,7 @@ def main():
         machine = Maquina(lines, "")
     else:
         machine = Maquina(lines, sys.argv[2].strip('"'))
-    machine.run()
+    return machine.run()
     
 
 if __name__ == '__main__':

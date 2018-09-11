@@ -1,5 +1,5 @@
 
-from copy import copy
+from copy import deepcopy
 
 
 
@@ -12,6 +12,7 @@ class Algoz():
         self.fita = fita
         self.estado_inicial = estado_inicial
         self.estado_atual = estado_inicial
+        self.count = 0
 
     def get_estado(self):
         return self.estado_atual
@@ -22,31 +23,45 @@ class Algoz():
 
     def get_fita(self):
 
-        return copy(self.fita)
+        return deepcopy(self.fita)
 
     def is_final(self, entrada):
         if self.estado_atual.isFinal():
             print("Entrada Aceita: \"%s\"" % (entrada))
-            exit(0)
+            return 0
 
     def get_copias(self, qtde, qtde_execucoes):
         aux = []
         if qtde < 0:
             qtde = 0
         for j in range(qtde):
-            copia = Algoz(qtde_execucoes,
+            copia = Algoz(qtde_execucoes+j,
                         self.get_fita(),
                         self.estado_atual)
             aux.append(copia)
 
         return aux
 
+    def parou(self):
+        print("Execução finalizada")
+
     def mostra_fita(self):
-        print("\nEXECUÇÂO: %i" % (self.execucao))
         print("Estado Atual: %s" % (self.estado_atual.getNome()))
         self.fita.mostraFita()
 
     def execute(self, transicao):
+
+
+        if self.count == 100:
+            print("Loop identificado")
+            return 0
+
+        if self.estado_atual.getNome() == transicao.getNovoEstado().getNome():
+            self.count += 1
+        else:
+            self.count = 0
+
+        print("\nEXECUÇÂO: %i" % (self.execucao))
 
         self.mostra_fita()
         self.estado_atual = transicao.getNovoEstado()
@@ -69,7 +84,7 @@ class Algoz():
         elif movimento == 'L':
             self.fita.setLeft()
 
-        self.fita.mostraFita()
+        self.mostra_fita()
         print()
         return {
             "estado": self.estado_atual,
