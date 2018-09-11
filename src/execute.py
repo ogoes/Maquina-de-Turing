@@ -25,12 +25,12 @@ class Algoz():
 
         return deepcopy(self.fita)
 
-    def is_final(self, entrada):
+    def is_final(self, entrada): # verifica o fim da execução
         if self.estado_atual.is_final():
             print("Entrada Aceita: \"", "\033[1m", "\033[36;2m", "%s" %(entrada), "\033[0;0m", '"',sep='')
             return 0
 
-    def get_copias(self, qtde, qtde_execucoes):
+    def get_copias(self, qtde, qtde_execucoes): # cria copias de execuções
         aux = []
         if qtde < 0:
             qtde = 0
@@ -49,7 +49,7 @@ class Algoz():
         print("Estado Atual: %s" % (self.estado_atual.get_nome()))
         self.fita.mostra_fita()
 
-    def execute(self, transicao):
+    def execute(self, transicao): # execução de uma transicao
 
 
         if self.count == 100:

@@ -2,7 +2,7 @@
 import sys
 from maquina import *
 
-def read_lines(filename):
+def read_lines(filename): ## faz a leitura das linhas do arquivo contendo as configurações da maquina
     arq = open(filename)
 
     lines = [line.strip() for line in arq.readlines()]
@@ -16,7 +16,7 @@ def read_lines(filename):
     result['estados_finais'] = lines[5].split(' ')
     result['transicoes'] = []
 
-    for t in lines[7:]:
+    for t in lines[7:]: ## a partir da linha 8 coleta os dados das transições
         split_tmp = t.split(' ')
 
         transition = {}
@@ -34,15 +34,13 @@ def read_lines(filename):
 
 
 def main():
-    lines = read_lines(sys.argv[1])
-
-    # print(lines);
+    data = read_lines(sys.argv[1]) ## chamada da função de coleta dos dados a partir do arquivo
 
     if len(sys.argv) == 2:
-        machine = Maquina(lines, "")
+        machine = Maquina(data, "")
     else:
-        machine = Maquina(lines, sys.argv[2].strip('"'))
-    return machine.run()
+        machine = Maquina(data, sys.argv[2].strip('"')) ## instanciação de uma maquina com os dados da maquina e entrada
+    return machine.run() # inicio da execução dos dados
     
 
 if __name__ == '__main__':

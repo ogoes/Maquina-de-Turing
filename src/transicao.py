@@ -1,5 +1,5 @@
 class Transicao:
-    def __init__(self, estadoAtual, novoEstado, *dados):
+    def __init__(self, estadoAtual, novoEstado, *dados): ## classe, atributos e metodos para transicoes
         self.estadoAtual = estadoAtual
         self.novoEstado = novoEstado
         self.simboloAtual = dados[0] 
