@@ -1,7 +1,7 @@
 from estado import *
 from transicao import *
 from fita import *
-from execute import Algoz
+from execute import *
 
 
 class Maquina:
@@ -24,8 +24,8 @@ class Maquina:
         self.finais = result["estados_finais"]
 
         for i, estado in enumerate(self.listaEstados):
-            if estado.getNome() == result['estado_inicial']:
-                self.listaEstados[i].setInicial()
+            if estado.get_nome() == result['estado_inicial']:
+                self.listaEstados[i].set_inicial()
                 self.estadoAtual = self.listaEstados[i]
 
 
@@ -37,15 +37,15 @@ class Maquina:
 
         for finais in result['estados_finais']:
             for i, estado in enumerate(self.listaEstados):
-                if estado.getNome() == finais:
-                    self.listaEstados[i].setFinal()
+                if estado.get_nome() == finais:
+                    self.listaEstados[i].set_final()
 
         self.transicoes = []
         for transicoes in result['transicoes']:
             for i, estado in enumerate(self.listaEstados):
-                if transicoes['estado_atual'] == estado.getNome():
+                if transicoes['estado_atual'] == estado.get_nome():
                     cur_state = self.listaEstados[i]
-                if transicoes['estado_destino'] == estado.getNome():
+                if transicoes['estado_destino'] == estado.get_nome():
                     nex_state = self.listaEstados[i]
 
             self.transicoes.append(Transicao(
@@ -59,7 +59,7 @@ class Maquina:
 
     def get_transicoes(self, estado, simbolo):
         transitions = [t for t in self.transicoes 
-                        if estado.getNome() == t.getEstadoAtual().getNome() and t.getSimboloAtual() == simbolo]
+                        if estado.get_nome() == t.get_estado_atual().get_nome() and t.get_simbolo_atual() == simbolo]
         return transitions
 
     def run(self):
@@ -96,17 +96,18 @@ class Maquina:
 
             trans = []
             for execs in self.execucoes:
-                execs['exec'].execute(execs['transicoes'])
+                if execs['exec'].execute(execs['transicoes']) == 0:
+                    return 0
                 execs['transicoes'] = self.get_transicoes(execs['exec'].get_estado(), execs['exec'].get_simbolo())
                 trans += execs['transicoes']
                 if execs['exec'].is_final(self.entrada) == 0:
                     return 0
 
             if len(self.execucoes) == 0:
-                print("Entrada Recusada: \"%s\"" %(self.entrada))
+                print("Entrada Recusada: \"", "\033[1m", "\033[31;2m", "%s" %(self.entrada), "\033[0;0m", '"',sep='')
                 return 1
 
             print("---------------------------------------------------------------------")
-            input()
+            # input()
 
 

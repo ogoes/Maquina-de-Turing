@@ -4,17 +4,17 @@ class Estado:
         self.inicial = False
         self.final = False
 
-    def getNome(self):
+    def get_nome(self):
         return self.nome
 
-    def isFinal(self):
+    def is_final(self):
         return self.final
 
-    def isInicial(self):
+    def is_inicial(self):
         return self.inicial
 
-    def setInicial(self):
+    def set_inicial(self):
         self.inicial = True
 
-    def setFinal(self):
+    def set_final(self):
         self.final = True

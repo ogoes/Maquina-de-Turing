@@ -10,26 +10,26 @@ class Fita:
 		self.__fita[ len(self.__fita): ] = [ent for ent in entrada]
 		self.__fita[ len(self.__fita): ] = [blank, blank, blank]
 
-	def setPos(self, caractere):
+	def set_pos(self, caractere):
 		if not any(caractere == carac for carac in self.__alfabeto):
 			print("caractere inválido")
 		else:
 			self.__fita[self.__posicao] = caractere
 
 
-	def getPos(self):
+	def get_pos(self):
 		return self.__fita[self.__posicao]
 
 
 
-	def setRight(self):
+	def set_right(self):
 		if self.__posicao == len(self.__fita)-1:
 			self.__fita[ len(self.__fita): ] = [self.__blank, self.__blank, self.__blank]
 
 		self.__posicao += 1
 
 
-	def setLeft(self):
+	def set_left(self):
 		if self.__posicao == 0:
 			fitaAux = [self.__blank, self.__blank, self.__blank]
 			fitaAux[ len(fitaAux): ] = self.__fita
@@ -38,7 +38,7 @@ class Fita:
 
 		self.__posicao -= 1
 
-	def mostraFita(self):
+	def mostra_fita(self):
 
 		print("··· ", end='')
 		for i in range(len(self.__fita)):

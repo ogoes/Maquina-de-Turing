@@ -19,15 +19,15 @@ class Algoz():
 
     def get_simbolo(self):
 
-        return self.fita.getPos()
+        return self.fita.get_pos()
 
     def get_fita(self):
 
         return deepcopy(self.fita)
 
     def is_final(self, entrada):
-        if self.estado_atual.isFinal():
-            print("Entrada Aceita: \"%s\"" % (entrada))
+        if self.estado_atual.is_final():
+            print("Entrada Aceita: \"", "\033[1m", "\033[36;2m", "%s" %(entrada), "\033[0;0m", '"',sep='')
             return 0
 
     def get_copias(self, qtde, qtde_execucoes):
@@ -46,8 +46,8 @@ class Algoz():
         print("Execução finalizada")
 
     def mostra_fita(self):
-        print("Estado Atual: %s" % (self.estado_atual.getNome()))
-        self.fita.mostraFita()
+        print("Estado Atual: %s" % (self.estado_atual.get_nome()))
+        self.fita.mostra_fita()
 
     def execute(self, transicao):
 
@@ -56,7 +56,7 @@ class Algoz():
             print("Loop identificado")
             return 0
 
-        if self.estado_atual.getNome() == transicao.getNovoEstado().getNome():
+        if self.estado_atual.get_nome() == transicao.get_novo_estado().get_nome():
             self.count += 1
         else:
             self.count = 0
@@ -64,29 +64,29 @@ class Algoz():
         print("\nEXECUÇÂO: %i" % (self.execucao))
 
         self.mostra_fita()
-        self.estado_atual = transicao.getNovoEstado()
+        self.estado_atual = transicao.get_novo_estado()
 
-        novoSimbolo = transicao.getNovoSimbolo()
-        self.fita.setPos(novoSimbolo)
+        novoSimbolo = transicao.get_novo_simbolo()
+        self.fita.set_pos(novoSimbolo)
 
         print("Instrução a ser executada:",
-              transicao.getEstadoAtual().getNome(), "-->",
-              transicao.getNovoEstado().getNome(), ",",
-              transicao.getSimboloAtual(), "-->",
-              transicao.getNovoSimbolo(), ",",
-              transicao.getMovimento())
+              transicao.get_estado_atual().get_nome(), "-->",
+              transicao.get_novo_estado().get_nome(), ",",
+              transicao.get_simbolo_atual(), "-->",
+              transicao.get_novo_simbolo(), ",",
+              transicao.get_movimento())
 
 
 
-        movimento = transicao.getMovimento()
+        movimento = transicao.get_movimento()
         if movimento == 'R':
-            self.fita.setRight()
+            self.fita.set_right()
         elif movimento == 'L':
-            self.fita.setLeft()
+            self.fita.set_left()
 
         self.mostra_fita()
         print()
         return {
             "estado": self.estado_atual,
-            "simbolo": self.fita.getPos()
+            "simbolo": self.fita.get_pos()
             }

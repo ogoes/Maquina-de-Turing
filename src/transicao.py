@@ -7,17 +7,17 @@ class Transicao:
         self.movimento = dados[2] 
 
 
-    def getSimboloAtual(self):
+    def get_simbolo_atual(self):
         return self.simboloAtual
 
-    def getNovoSimbolo(self):
+    def get_novo_simbolo(self):
         return self.novoSimbolo
 
-    def getEstadoAtual(self):
+    def get_estado_atual(self):
         return self.estadoAtual
 
-    def getNovoEstado(self):
+    def get_novo_estado(self):
         return self.novoEstado
 
-    def getMovimento(self):
+    def get_movimento(self):
         return self.movimento
